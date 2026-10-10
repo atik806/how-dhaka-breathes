@@ -1,69 +1,92 @@
-import Image from "next/image";
+import { HourGrid } from "@/components/charts/HourGrid";
+import { NeighbourhoodChart } from "@/components/charts/NeighbourhoodChart";
+import { YearHeatmap } from "@/components/charts/YearHeatmap";
+import { ChapterNav } from "@/components/story/ChapterNav";
+import { DayStory } from "@/components/story/DayStory";
+import { HealthPanel } from "@/components/story/HealthPanel";
+import { Hero } from "@/components/story/Hero";
+import { Methodology } from "@/components/story/Methodology";
+import { Planner } from "@/components/story/Planner";
+import { SeasonStory } from "@/components/story/SeasonStory";
+import { SectionHeader } from "@/components/story/SectionHeader";
+import { monthsData, neighbourhoodData } from "@/lib/data";
+import { mean } from "@/lib/plan";
+import { seasonStats } from "@/lib/story";
+
+const SECTION = "mx-auto max-w-6xl scroll-mt-8 px-5 py-24 sm:px-8";
 
 export default function Home() {
+  const winter = seasonStats("winter");
+  const monthMeans = monthsData.months.map((m) => ({
+    label: m.label,
+    avg: Math.round(mean(m.aqi)),
+  }));
+  const dirtiest = monthMeans.reduce((a, b) => (b.avg > a.avg ? b : a));
+  const cleanest = monthMeans.reduce((a, b) => (b.avg < a.avg ? b : a));
+  const areas = [...neighbourhoodData.areas].sort((a, b) => a.factor - b.factor);
+  const spread = Math.round((areas[areas.length - 1].factor / areas[0].factor - 1) * 100);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main id="main">
+      <ChapterNav />
+      <Hero />
+      <DayStory />
+      <SeasonStory />
+
+      <section id="year" aria-labelledby="year-title" className={SECTION}>
+        <SectionHeader part="Part three" id="year-title" title="The year in one picture">
+          Every row is a month and every column an hour. Read across a row for the daily rhythm, and
+          down a column to see the seasons change. {dirtiest.label} is the worst month (average AQI{" "}
+          {dirtiest.avg}) and {cleanest.label} the cleanest ({cleanest.avg}), a{" "}
+          {Math.round(dirtiest.avg / cleanest.avg)}× difference.
+        </SectionHeader>
+        <div className="mt-10">
+          <YearHeatmap />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </section>
+
+      <section id="neighbourhoods" aria-labelledby="hoods-title" className={SECTION}>
+        <SectionHeader part="Part four" id="hoods-title" title="Not every street breathes the same">
+          The same weather sits over the whole city, but what happens on the ground differs. Leafy{" "}
+          {areas[0].name} and industrial {areas[areas.length - 1].name} differ by about {spread}% on
+          a typical day, and the gap widens at rush hour on busy corridors.
+        </SectionHeader>
+        <p className="mt-3 max-w-2xl text-xs text-mute">
+          These neighbourhood profiles are illustrative, not station readings.
+        </p>
+        <div className="mt-12">
+          <NeighbourhoodChart />
         </div>
-      </main>
-    </div>
+      </section>
+
+      <section id="health" aria-labelledby="health-title" className={SECTION}>
+        <SectionHeader part="Part five" id="health-title" title="What it means to breathe it">
+          Each square below is one hour of a typical day, colored by the US EPA category. On a
+          winter day in this dataset, {winter.unhealthyHours} of 24 hours are unhealthy for
+          everyone, not only children, older people and those with asthma.
+        </SectionHeader>
+        <div className="mt-10">
+          <HourGrid />
+        </div>
+        <HealthPanel />
+      </section>
+
+      <section id="plan" aria-labelledby="plan-title" className={SECTION}>
+        <SectionHeader part="Part six" id="plan-title" title="Plan your time outside">
+          You can&rsquo;t change the air, but you can change when you breathe it. Pick a month and
+          how long you&rsquo;ll be out, and we&rsquo;ll find the cleanest and the worst window in a
+          typical day.
+        </SectionHeader>
+        <div className="mt-10">
+          <Planner />
+        </div>
+      </section>
+
+      <Methodology />
+
+      <footer className="mx-auto max-w-6xl px-5 pb-12 text-xs text-mute sm:px-8">
+        How Dhaka Breathes is a data story built with demo data.
+      </footer>
+    </main>
   );
 }
