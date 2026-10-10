@@ -1,0 +1,146 @@
+"use client";
+
+import { scaleLinear } from "d3-scale";
+import { curveMonotoneX, line } from "d3-shape";
+import { motion, useReducedMotion } from "motion/react";
+import { useState } from "react";
+import { aqiCategory } from "@/lib/aqi";
+import { aqiData, neighbourhoodData, neighbourhoodSeries, SEASONS } from "@/lib/data";
+import { hourLabel } from "@/lib/format";
+import { mean } from "@/lib/plan";
+import type { Season } from "@/lib/types";
+import { DataTable } from "./DataTable";
+import { SegmentedControl } from "./SegmentedControl";
+
+const MAX = 300;
+const SPARK_W = 120;
+const SPARK_H = 28;
+const sx = scaleLinear()
+  .domain([0, 23])
+  .range([1, SPARK_W - 1]);
+// Text on the bright EPA swatches (green → orange) reads best in black.
+const DARK_TEXT = new Set(["Good", "Moderate", "Unhealthy for Sensitive Groups"]);
+
+export function NeighbourhoodChart() {
+  const reduce = useReducedMotion();
+  const [season, setSeason] = useState<Season>("winter");
+  const cityMean = mean(aqiData.seasons[season].map((p) => p.median));
+
+  const rows = neighbourhoodData.areas
+    .map((a) => {
+      const series = neighbourhoodSeries(a, season);
+      const peak = series.indexOf(Math.max(...series));
+      return { ...a, series, avg: Math.round(mean(series)), peak };
+    })
+    .sort((a, b) => a.avg - b.avg);
+
+  // Sparklines share one y-scale per season so their shapes stay comparable.
+  const all = rows.flatMap((r) => r.series);
+  const sy = scaleLinear()
+    .domain([Math.min(...all), Math.max(...all)])
+    .range([SPARK_H - 2, 2]);
+  const spark = line<number>()
+    .x((_, i) => sx(i))
+    .y((v) => sy(v))
+    .curve(curveMonotoneX);
+
+  const t = reduce ? { duration: 0 } : { type: "spring" as const, stiffness: 260, damping: 32 };
+
+  return (
+    <div>
+      <SegmentedControl
+        label="Season"
+        value={season}
+        onChange={setSeason}
+        options={SEASONS.map((s) => ({ value: s.id, label: s.label }))}
+      />
+
+      <div className="relative mt-8">
+        {/* City average reference line, positioned over the bar column. */}
+        <div
+          className="pointer-events-none absolute inset-y-0 left-[8.5rem] right-0 sm:left-[12.5rem] sm:right-[9.5rem]"
+          aria-hidden
+        >
+          <motion.div
+            className="absolute inset-y-0 border-l border-dashed border-ink/40"
+            initial={false}
+            animate={{ left: `${(cityMean / MAX) * 100}%` }}
+            transition={t}
+          >
+            <span className="absolute -top-5 -translate-x-1/2 whitespace-nowrap text-[10px] text-mute">
+              city avg {Math.round(cityMean)}
+            </span>
+          </motion.div>
+        </div>
+
+        <ol
+          className="space-y-2"
+          aria-label={`Neighbourhoods ranked by daily average AQI, cleanest first`}
+        >
+          {rows.map((r) => {
+            const c = aqiCategory(r.avg);
+            return (
+              <motion.li
+                key={r.id}
+                layout={!reduce}
+                transition={t}
+                className="grid grid-cols-[8rem_1fr] items-center gap-x-2 sm:grid-cols-[12rem_1fr_9rem]"
+              >
+                <div className="pr-2">
+                  <div className="text-sm font-medium text-ink">{r.name}</div>
+                  <div
+                    className="truncate text-[11px] text-mute sm:whitespace-normal"
+                    title={r.note}
+                  >
+                    {r.note}
+                  </div>
+                </div>
+                <div className="relative h-7 rounded bg-line/40">
+                  <motion.div
+                    className="absolute inset-y-0 left-0 flex items-center justify-end rounded pr-2"
+                    style={{ backgroundColor: c.color }}
+                    initial={false}
+                    animate={{ width: `${(Math.min(r.avg, MAX) / MAX) * 100}%` }}
+                    transition={t}
+                  >
+                    <span
+                      className={`text-xs font-semibold tabular-nums ${DARK_TEXT.has(c.name) ? "text-black/80" : "text-white"}`}
+                    >
+                      {r.avg}
+                    </span>
+                  </motion.div>
+                </div>
+                <div className="hidden items-center justify-end sm:flex" aria-hidden>
+                  <svg width={SPARK_W} height={SPARK_H}>
+                    <path
+                      d={spark(r.series) ?? ""}
+                      fill="none"
+                      stroke={c.display}
+                      strokeWidth={1.5}
+                    />
+                    <circle cx={sx(r.peak)} cy={sy(r.series[r.peak])} r={2.5} fill={c.display} />
+                  </svg>
+                </div>
+                <p className="sr-only">
+                  {r.name}: daily average AQI {r.avg}, {c.name}; worst at{" "}
+                  {hourLabel(r.peak, "long")}.
+                </p>
+              </motion.li>
+            );
+          })}
+        </ol>
+        <p className="mt-3 hidden text-right text-[11px] text-mute sm:block">
+          24h curve · dot = worst hour
+        </p>
+      </div>
+
+      <DataTable
+        caption={`Typical hourly AQI by neighbourhood, ${SEASONS.find((s) => s.id === season)!.label}`}
+        columns={rows.map((r) => ({
+          label: r.name,
+          series: r.series.map((v, hour) => ({ hour, median: v, p25: v, p75: v })),
+        }))}
+      />
+    </div>
+  );
+}
