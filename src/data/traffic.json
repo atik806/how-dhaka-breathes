@@ -1,0 +1,310 @@
+{
+  "meta": {
+    "demo": true,
+    "location": {
+      "name": "Dhaka",
+      "lat": 23.8103,
+      "lon": 90.4125
+    },
+    "timezone": "Asia/Dhaka",
+    "generatedBy": "scripts/generate-demo-data.mjs",
+    "metric": "Relative congestion index",
+    "unit": "index (0–100)",
+    "source": "Demo data: estimated index, no open hourly traffic feed exists for Dhaka",
+    "method": "Hand-shaped from typical commute patterns; 100 = worst hour of a typical weekday"
+  },
+  "days": {
+    "weekday": [
+      {
+        "hour": 0,
+        "median": 27,
+        "p25": 25,
+        "p75": 29
+      },
+      {
+        "hour": 1,
+        "median": 21,
+        "p25": 19,
+        "p75": 23
+      },
+      {
+        "hour": 2,
+        "median": 13,
+        "p25": 12,
+        "p75": 14
+      },
+      {
+        "hour": 3,
+        "median": 10,
+        "p25": 9,
+        "p75": 10
+      },
+      {
+        "hour": 4,
+        "median": 11,
+        "p25": 10,
+        "p75": 12
+      },
+      {
+        "hour": 5,
+        "median": 14,
+        "p25": 13,
+        "p75": 15
+      },
+      {
+        "hour": 6,
+        "median": 29,
+        "p25": 26,
+        "p75": 31
+      },
+      {
+        "hour": 7,
+        "median": 58,
+        "p25": 52,
+        "p75": 63
+      },
+      {
+        "hour": 8,
+        "median": 81,
+        "p25": 73,
+        "p75": 88
+      },
+      {
+        "hour": 9,
+        "median": 90,
+        "p25": 81,
+        "p75": 97
+      },
+      {
+        "hour": 10,
+        "median": 79,
+        "p25": 71,
+        "p75": 85
+      },
+      {
+        "hour": 11,
+        "median": 71,
+        "p25": 64,
+        "p75": 77
+      },
+      {
+        "hour": 12,
+        "median": 65,
+        "p25": 58,
+        "p75": 70
+      },
+      {
+        "hour": 13,
+        "median": 63,
+        "p25": 57,
+        "p75": 68
+      },
+      {
+        "hour": 14,
+        "median": 65,
+        "p25": 58,
+        "p75": 70
+      },
+      {
+        "hour": 15,
+        "median": 69,
+        "p25": 62,
+        "p75": 74
+      },
+      {
+        "hour": 16,
+        "median": 78,
+        "p25": 70,
+        "p75": 84
+      },
+      {
+        "hour": 17,
+        "median": 88,
+        "p25": 79,
+        "p75": 95
+      },
+      {
+        "hour": 18,
+        "median": 96,
+        "p25": 86,
+        "p75": 100
+      },
+      {
+        "hour": 19,
+        "median": 92,
+        "p25": 83,
+        "p75": 99
+      },
+      {
+        "hour": 20,
+        "median": 81,
+        "p25": 73,
+        "p75": 87
+      },
+      {
+        "hour": 21,
+        "median": 65,
+        "p25": 58,
+        "p75": 70
+      },
+      {
+        "hour": 22,
+        "median": 51,
+        "p25": 46,
+        "p75": 55
+      },
+      {
+        "hour": 23,
+        "median": 37,
+        "p25": 33,
+        "p75": 40
+      }
+    ],
+    "friday": [
+      {
+        "hour": 0,
+        "median": 29,
+        "p25": 26,
+        "p75": 32
+      },
+      {
+        "hour": 1,
+        "median": 23,
+        "p25": 20,
+        "p75": 24
+      },
+      {
+        "hour": 2,
+        "median": 15,
+        "p25": 13,
+        "p75": 16
+      },
+      {
+        "hour": 3,
+        "median": 11,
+        "p25": 10,
+        "p75": 12
+      },
+      {
+        "hour": 4,
+        "median": 10,
+        "p25": 9,
+        "p75": 11
+      },
+      {
+        "hour": 5,
+        "median": 7,
+        "p25": 6,
+        "p75": 7
+      },
+      {
+        "hour": 6,
+        "median": 11,
+        "p25": 10,
+        "p75": 12
+      },
+      {
+        "hour": 7,
+        "median": 17,
+        "p25": 15,
+        "p75": 18
+      },
+      {
+        "hour": 8,
+        "median": 25,
+        "p25": 22,
+        "p75": 27
+      },
+      {
+        "hour": 9,
+        "median": 31,
+        "p25": 28,
+        "p75": 33
+      },
+      {
+        "hour": 10,
+        "median": 40,
+        "p25": 36,
+        "p75": 44
+      },
+      {
+        "hour": 11,
+        "median": 42,
+        "p25": 38,
+        "p75": 46
+      },
+      {
+        "hour": 12,
+        "median": 31,
+        "p25": 28,
+        "p75": 34
+      },
+      {
+        "hour": 13,
+        "median": 39,
+        "p25": 35,
+        "p75": 42
+      },
+      {
+        "hour": 14,
+        "median": 50,
+        "p25": 45,
+        "p75": 54
+      },
+      {
+        "hour": 15,
+        "median": 58,
+        "p25": 52,
+        "p75": 62
+      },
+      {
+        "hour": 16,
+        "median": 63,
+        "p25": 57,
+        "p75": 68
+      },
+      {
+        "hour": 17,
+        "median": 71,
+        "p25": 64,
+        "p75": 77
+      },
+      {
+        "hour": 18,
+        "median": 73,
+        "p25": 65,
+        "p75": 78
+      },
+      {
+        "hour": 19,
+        "median": 71,
+        "p25": 64,
+        "p75": 77
+      },
+      {
+        "hour": 20,
+        "median": 63,
+        "p25": 57,
+        "p75": 68
+      },
+      {
+        "hour": 21,
+        "median": 54,
+        "p25": 48,
+        "p75": 58
+      },
+      {
+        "hour": 22,
+        "median": 45,
+        "p25": 41,
+        "p75": 49
+      },
+      {
+        "hour": 23,
+        "median": 37,
+        "p25": 33,
+        "p75": 40
+      }
+    ]
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "meta": {
+    "demo": true,
+    "location": {
+      "name": "Dhaka",
+      "lat": 23.8103,
+      "lon": 90.4125
+    },
+    "timezone": "Asia/Dhaka",
+    "generatedBy": "scripts/generate-demo-data.mjs",
+    "metric": "Relative AQI profile by neighbourhood",
+    "unit": "multiplier",
+    "source": "Demo data: illustrative profiles, not station readings",
+    "method": "City curve × factor × (1 + rush × (traffic/100 − 0.55))"
+  },
+  "areas": [
+    {
+      "id": "gulshan",
+      "name": "Gulshan",
+      "factor": 0.88,
+      "rush": 0.06,
+      "note": "Diplomatic zone, lakes and more tree cover"
+    },
+    {
+      "id": "dhanmondi",
+      "name": "Dhanmondi",
+      "factor": 0.93,
+      "rush": 0.1,
+      "note": "Residential, a lake and moderate traffic"
+    },
+    {
+      "id": "uttara",
+      "name": "Uttara",
+      "factor": 0.96,
+      "rush": 0.12,
+      "note": "Planned suburb near the airport highway"
+    },
+    {
+      "id": "mohammadpur",
+      "name": "Mohammadpur",
+      "factor": 1.02,
+      "rush": 0.1,
+      "note": "Dense housing near the river and kiln belt"
+    },
+    {
+      "id": "mirpur",
+      "name": "Mirpur",
+      "factor": 1.05,
+      "rush": 0.14,
+      "note": "Large population and heavy metro construction"
+    },
+    {
+      "id": "motijheel",
+      "name": "Motijheel",
+      "factor": 1.08,
+      "rush": 0.22,
+      "note": "Commercial core with peak-hour gridlock"
+    },
+    {
+      "id": "tejgaon",
+      "name": "Tejgaon",
+      "factor": 1.12,
+      "rush": 0.16,
+      "note": "Industrial area with lots of truck traffic"
+    },
+    {
+      "id": "old-dhaka",
+      "name": "Old Dhaka",
+      "factor": 1.16,
+      "rush": 0.18,
+      "note": "Narrow lanes, small industry and generators"
+    }
+  ]
+}
