@@ -11,8 +11,22 @@ export type AqiCategory = {
 };
 
 export const AQI_CATEGORIES: AqiCategory[] = [
-  { name: "Good", short: "Good", min: 0, max: 50, color: "#00e400", display: "#4ade80" },
-  { name: "Moderate", short: "Moderate", min: 51, max: 100, color: "#ffff00", display: "#fde047" },
+  {
+    name: "Good",
+    short: "Good",
+    min: 0,
+    max: 50,
+    color: "#00e400",
+    display: "#4ade80",
+  },
+  {
+    name: "Moderate",
+    short: "Moderate",
+    min: 51,
+    max: 100,
+    color: "#ffff00",
+    display: "#fde047",
+  },
   {
     name: "Unhealthy for Sensitive Groups",
     short: "Sensitive",

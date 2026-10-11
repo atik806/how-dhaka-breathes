@@ -36,11 +36,34 @@ export function seasonOfMonth(month: number): Season {
   return "postMonsoon";
 }
 
-/** A neighbourhood's typical-day AQI, derived from the city curve and weekday traffic. */
-export function neighbourhoodSeries(area: Neighbourhood, season: Season): number[] {
-  const city = aqiData.seasons[season];
-  const traffic = trafficData.days.weekday;
-  return city.map((p, h) =>
-    Math.round(p.median * area.factor * (1 + area.rush * (traffic[h].median / 100 - 0.55))),
-  );
+/** A neighbourhood's typical-day AQI for a season, or null without enough data. */
+export function neighbourhoodSeries(area: Neighbourhood, season: Season): number[] | null {
+  return area.seasons[season]?.aqi ?? null;
+}
+
+/** Seasons with at least two neighbourhoods to compare. */
+export const NEIGHBOURHOOD_SEASONS = SEASONS.filter(
+  (s) => neighbourhoodData.areas.filter((a) => a.seasons[s.id]).length >= 2,
+);
+
+/** True when every dataset on the page is synthetic. */
+export const ALL_DEMO = [aqiData, temperatureData, monthsData, neighbourhoodData].every(
+  (d) => d.meta.demo,
+);
+
+/** "Apr 2024 – Mar 2025" for a dataset's period. */
+export function periodLabel(period?: { start: string; end: string }): string {
+  if (!period) return "";
+  const fmt = (d: string) =>
+    new Date(`${d}T00:00:00Z`).toLocaleDateString("en-GB", {
+      month: "short",
+      year: "numeric",
+      timeZone: "UTC",
+    });
+  return `${fmt(period.start)} – ${fmt(period.end)}`;
+}
+
+/** Upper y-domain bound: at least 300, rounded up to the next 50. */
+export function aqiCeiling(values: number[]): number {
+  return Math.max(300, Math.ceil(Math.max(...values) / 50) * 50);
 }

@@ -58,16 +58,25 @@ export function buildDaySteps(): StoryStep[] {
   const { unhealthyHours } = seasonStats(STORY_SEASON);
   const trafficIsDayPeak = eveningTraffic.median >= morningTraffic.median;
 
+  const nightRising = at(6) > at(0);
+  const nightNearPeak = at(0) >= dayMax.median * 0.9;
+  // Real Dhaka data: AQI often *falls* through the morning rush as the sun mixes the air.
+  const morningFalling = at(10) < at(7) - 5;
+  const worstAtNight = dayMax.hour >= 21 || dayMax.hour <= 5;
+
   return [
     {
       id: "night",
       kicker: hourRangeLabel(0, 6),
-      title: "The city exhales, and the air stays put",
+      title: "The city sleeps, and the air stays put",
       body:
-        `At midnight the AQI already reads ${at(0)}, which is ${cat(at(0))}. ` +
-        `On still winter nights a lid of cool air settles over the city, and the smoke ` +
-        `from kilns, cooking fires and late trucks has nowhere to go. By ${hourLabel(6, "long")} ` +
-        `it has reached ${at(6)}.`,
+        `At midnight the AQI reads ${at(0)}, which is ${cat(at(0))}` +
+        (nightNearPeak ? ", close to the worst of the day. " : ". ") +
+        `On still winter nights a lid of cool air settles over the city, and smoke from kilns, ` +
+        `cooking fires and late-night trucks has nowhere to go. ` +
+        (nightRising
+          ? `By ${hourLabel(6, "long")} it has climbed to ${at(6)}.`
+          : `Even by ${hourLabel(6, "long")} it has only eased to ${at(6)}.`),
       range: [0, 6],
       layers: ["aqi"],
       focusHour: 6,
@@ -75,16 +84,23 @@ export function buildDaySteps(): StoryStep[] {
     {
       id: "morning",
       kicker: hourRangeLabel(7, 10),
-      title: "Rush hour meets a sky that hasn't cleared",
+      title: morningFalling
+        ? "Rush hour, and the lid starts to lift"
+        : "Rush hour meets a sky that hasn't cleared",
       body:
-        `The roads fill fast. Congestion hits ${morningTraffic.median}/100 at ` +
-        `${hourLabel(morningTraffic.hour, "long")}, and AQI peaks at ${morningAqi.median} around ` +
-        `${hourLabel(morningAqi.hour, "long")}` +
-        (morningAqi.hour === dayMax.hour ? ", the worst air of the whole day." : ".") +
-        ` Fresh exhaust piles into air that is still trapped from the night.`,
+        `The roads fill fast: congestion hits ${morningTraffic.median}/100 at ` +
+        `${hourLabel(morningTraffic.hour, "long")}. ` +
+        (morningFalling
+          ? `Yet the AQI falls, from ${at(7)} at ${hourLabel(7, "long")} to ${at(10)} by ` +
+            `${hourLabel(10, "long")}. As the sun warms the ground, the trapped night air starts ` +
+            `to mix upward, which suggests the weather, more than the traffic, sets the level at ` +
+            `this hour.`
+          : `AQI peaks at ${morningAqi.median} around ${hourLabel(morningAqi.hour, "long")}` +
+            (morningAqi.hour === dayMax.hour ? ", the worst air of the whole day." : ".") +
+            ` Fresh exhaust piles into air that is still trapped from the night.`),
       range: [7, 10],
       layers: ["aqi", "traffic"],
-      focusHour: morningAqi.hour,
+      focusHour: morningFalling ? 10 : morningAqi.hour,
     },
     {
       id: "afternoon",
@@ -101,14 +117,15 @@ export function buildDaySteps(): StoryStep[] {
     },
     {
       id: "evening",
-      kicker: hourRangeLabel(17, 22),
+      kicker: hourRangeLabel(17, 23),
       title: "Everyone goes home at once",
       body:
         `At ${hourLabel(eveningTraffic.hour, "long")} the roads reach ${eveningTraffic.median}/100` +
         (trafficIsDayPeak ? ", the most congested hour of the day" : "") +
         `. As the sun sets the mixing stops, and AQI climbs back to ${eveningAqi.median} by ` +
-        `${hourLabel(eveningAqi.hour, "long")}.`,
-      range: [17, 22],
+        `${hourLabel(eveningAqi.hour, "long")}` +
+        (eveningAqi.hour === dayMax.hour ? ", the worst hour of the whole day." : "."),
+      range: [17, 23],
       layers: ["aqi", "traffic", "temp"],
       focusHour: eveningAqi.hour,
     },
@@ -117,10 +134,16 @@ export function buildDaySteps(): StoryStep[] {
       kicker: "The whole day",
       title: `${unhealthyHours} of 24 hours`,
       body:
-        `On a typical winter weekday, ${unhealthyHours} of 24 hours are unhealthy for everyone ` +
-        `(AQI above 150). Traffic and smog rise together, but traffic is only one source. ` +
-        `Brick kilns, construction dust and the weather matter just as much, and the overlap ` +
-        `doesn't prove one causes the other.`,
+        `On a typical winter day, ${unhealthyHours} of 24 hours are unhealthy for everyone ` +
+        `(AQI above 150). ` +
+        (worstAtNight
+          ? `The timing shows who is in charge: the dirtiest air comes at ` +
+            `${hourLabel(dayMax.hour, "long")}, when traffic is down to ${traffic[dayMax.hour].median}/100 but the air is still. ` +
+            `Traffic adds to the smoke, but brick kilns, construction dust and the weather decide ` +
+            `how much of it we breathe.`
+          : `Traffic and smog rise together, but traffic is only one source. Brick kilns, ` +
+            `construction dust and the weather matter just as much, and the overlap doesn't ` +
+            `prove one causes the other.`),
       range: null,
       layers: ["aqi", "traffic", "temp"],
       focusHour: dayMax.hour,
