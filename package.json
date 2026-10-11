@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "data": "node scripts/generate-demo-data.mjs"
+    "data": "node scripts/generate-demo-data.mjs",
+    "openaq:check": "node --env-file=.env.local scripts/check-openaq.mjs",
+    "data:real": "node --env-file-if-exists=.env.local scripts/fetch-real-data.mjs"
   },
   "dependencies": {
     "d3-array": "^3.2.4",
