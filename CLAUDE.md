@@ -19,10 +19,19 @@ Hero + NowCard → DayStory → SeasonStory → year (YearHeatmap) → neighbour
 ChapterNav (progress bar + dot nav) lists the section ids, so keep it in sync when adding one.
 
 ## Data rules
-- `months.json` monthly ranges are chosen to average to the seasonal ranges, so the charts agree.
-- Neighbourhood series = city curve × factor × (1 + rush × (traffic/100 − 0.55)). They are illustrative.
+- Neighbourhood seasons can be missing (sensors start 2026; no winter yet). Use
+  `neighbourhoodSeries()` (nullable) and `NEIGHBOURHOOD_SEASONS`.
+- Real AQI exceeds 300 in winter; size AQI axes with `aqiCeiling()`, never a fixed 300.
+- Story copy in `src/lib/story.ts` branches on the data (e.g. AQI falls during the morning rush
+  in real data). Re-read the rendered steps after changing data.
 - Anything that uses the clock (`useDhakaNow`) returns null on the server, so render a same-size placeholder.
-- Data is static JSON in `src/data/`, produced by `npm run data`. It is currently DEMO data.
+- Data is static JSON in `src/data/`. `npm run data:real` = REAL data (US Embassy monitor +
+  OpenAQ sensors + Open-Meteo, needs `OPENAQ_API_KEY` in git-ignored `.env.local`);
+  `npm run data` = synthetic demo. Both write identical shapes; UI labels follow `meta.demo` /
+  `meta.citySource`, so never hard-code "demo" or "measured" in components.
+- Never put the OpenAQ key in client code or commit `.env.local`.
+- `latest.json` (`npm run data:latest`) is a build-time snapshot of the latest sensor readings.
+  Never call it "live" in the UI; always show the reading time.
 - Hours are local `Asia/Dhaka`, 0–23. Each line is a median "typical day" with a p25/p75 band.
 - Traffic has no open source, so always label it an "estimated index".
 - Story copy lives in `src/lib/story.ts` and is computed from the data. Never hardcode a
