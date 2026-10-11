@@ -5,6 +5,7 @@ import { ChapterNav } from "@/components/story/ChapterNav";
 import { DayStory } from "@/components/story/DayStory";
 import { HealthPanel } from "@/components/story/HealthPanel";
 import { Hero } from "@/components/story/Hero";
+import { LatestRanking } from "@/components/story/LatestRanking";
 import { Methodology } from "@/components/story/Methodology";
 import { Planner } from "@/components/story/Planner";
 import { SeasonStory } from "@/components/story/SeasonStory";
@@ -90,7 +91,13 @@ export default function Home() {
             : `Measured by ${neighbourhoodData.areas.filter((a) => Object.keys(a.seasons).length > 0).length} low-cost community sensors (Smart Air Bangladesh, via OpenAQ), ${periodLabel(neighbourhoodData.meta.period)}. Most were installed in early 2026, so winter isn't covered yet. Low-cost sensors can read high in humid air, so compare areas with each other rather than with the citywide figures.`}
         </p>
         <div className="mt-12">
-          <NeighbourhoodChart />
+          <LatestRanking />
+        </div>
+        <div className="mt-16">
+          <h3 className="font-display text-2xl text-ink">A typical day, by neighbourhood</h3>
+          <div className="mt-5">
+            <NeighbourhoodChart />
+          </div>
         </div>
       </section>
 

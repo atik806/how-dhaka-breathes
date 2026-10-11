@@ -4,7 +4,7 @@ import { scaleLinear } from "d3-scale";
 import { curveMonotoneX, line } from "d3-shape";
 import { motion, useReducedMotion } from "motion/react";
 import { useState } from "react";
-import { aqiCategory } from "@/lib/aqi";
+import { aqiCategory, DARK_TEXT_CATEGORIES } from "@/lib/aqi";
 import { NEIGHBOURHOOD_SEASONS, neighbourhoodData, neighbourhoodSeries, SEASONS } from "@/lib/data";
 import { hourLabel } from "@/lib/format";
 import { mean } from "@/lib/plan";
@@ -23,8 +23,6 @@ const SEASON_LABEL = Object.fromEntries(SEASONS.map((s) => [s.id, s.label])) as 
   string
 >;
 // Text on the bright EPA swatches (green → orange) reads best in black.
-const DARK_TEXT = new Set(["Good", "Moderate", "Unhealthy for Sensitive Groups"]);
-
 export function NeighbourhoodChart() {
   const reduce = useReducedMotion();
   const [season, setSeason] = useState<Season>(NEIGHBOURHOOD_SEASONS[0]?.id ?? "winter");
@@ -130,7 +128,7 @@ export function NeighbourhoodChart() {
                     transition={t}
                   >
                     <span
-                      className={`text-xs font-semibold tabular-nums ${DARK_TEXT.has(c.name) ? "text-black/80" : "text-white"}`}
+                      className={`text-xs font-semibold tabular-nums ${DARK_TEXT_CATEGORIES.has(c.name) ? "text-black/80" : "text-white"}`}
                     >
                       {r.avg}
                     </span>

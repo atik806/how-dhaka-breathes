@@ -77,3 +77,23 @@ export type NeighbourhoodDataset = {
   meta: DatasetMeta;
   areas: Neighbourhood[];
 };
+
+/** One location's most recent hourly reading. */
+export type LatestPlace = {
+  id: string;
+  name: string;
+  district: string;
+  locationId: number | null;
+  provider: string | null;
+  /** Null in demo data. */
+  pm25: number | null;
+  aqi: number;
+  /** Local ISO time of the reading. */
+  time: string;
+};
+
+export type LatestDataset = {
+  meta: DatasetMeta & { fetchedAt: string };
+  /** Sorted from the highest AQI to the lowest. */
+  places: LatestPlace[];
+};

@@ -1,6 +1,7 @@
 import {
   ALL_DEMO,
   aqiData,
+  latestData,
   monthsData,
   neighbourhoodData,
   periodLabel,
@@ -40,6 +41,11 @@ const DATASETS: { name: string; meta: DatasetMeta; kind: Kind }[] = [
     name: "Neighbourhoods",
     meta: neighbourhoodData.meta,
     kind: kindOf(neighbourhoodData.meta, "measured"),
+  },
+  {
+    name: "Latest readings",
+    meta: latestData.meta,
+    kind: kindOf(latestData.meta, "measured"),
   },
   {
     name: "Temperature",
@@ -92,6 +98,9 @@ export function Methodology() {
             <dd className="mt-1 text-xs text-mute">
               {d.meta.metric}
               {d.meta.period && ` · ${periodLabel(d.meta.period)}`}
+              {"fetchedAt" in d.meta &&
+                !d.meta.demo &&
+                ` · fetched ${String(d.meta.fetchedAt).slice(0, 16).replace("T", " ")} UTC`}
             </dd>
             <dd className="mt-3 text-xs leading-relaxed text-ink/90">{d.meta.source}</dd>
             <dd className="mt-2 text-xs leading-relaxed text-mute">{d.meta.method}.</dd>

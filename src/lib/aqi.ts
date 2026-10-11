@@ -66,6 +66,9 @@ export function aqiCategory(value: number): AqiCategory {
   return AQI_CATEGORIES.find((c) => v <= c.max) ?? AQI_CATEGORIES[AQI_CATEGORIES.length - 1];
 }
 
+/** Categories light enough that text on their official color must be dark. */
+export const DARK_TEXT_CATEGORIES = new Set(["Good", "Moderate", "Unhealthy for Sensitive Groups"]);
+
 /** Unhealthy for everyone = AQI above 150. */
 export const UNHEALTHY_THRESHOLD = 150;
 

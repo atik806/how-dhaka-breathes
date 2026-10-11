@@ -1,0 +1,89 @@
+{
+  "meta": {
+    "demo": false,
+    "location": {
+      "name": "Dhaka",
+      "lat": 23.8103,
+      "lon": 90.4125
+    },
+    "timezone": "Asia/Dhaka",
+    "generatedBy": "scripts/fetch-latest.mjs",
+    "fetchedAt": "2026-10-11T05:03:06.870Z",
+    "metric": "Latest hourly PM2.5 per sensor, as US AQI",
+    "unit": "AQI",
+    "source": "OpenAQ v3: Smart Air Bangladesh / AirGradient low-cost sensors",
+    "method": "Most recent hourly reading per location within 25 km of Dhaka, converted with the 2024 EPA breakpoints; readings older than 3 h are left out"
+  },
+  "places": [
+    {
+      "id": "6322838",
+      "name": "Sabujbagh",
+      "district": "Dhaka",
+      "locationId": 6322838,
+      "provider": "AirGradient",
+      "pm25": 84.5,
+      "aqi": 171,
+      "time": "2026-10-11T10:00:00+06:00"
+    },
+    {
+      "id": "6240773",
+      "name": "Mirpur (Kalshi)",
+      "district": "Dhaka",
+      "locationId": 6240773,
+      "provider": "AirGradient",
+      "pm25": 65.4,
+      "aqi": 158,
+      "time": "2026-10-11T10:00:00+06:00"
+    },
+    {
+      "id": "6236590",
+      "name": "Hazaribagh",
+      "district": "Dhaka",
+      "locationId": 6236590,
+      "provider": "AirGradient",
+      "pm25": 61.8,
+      "aqi": 155,
+      "time": "2026-10-11T10:00:00+06:00"
+    },
+    {
+      "id": "6157905",
+      "name": "Uttara",
+      "district": "Dhaka",
+      "locationId": 6157905,
+      "provider": "AirGradient",
+      "pm25": 57.2,
+      "aqi": 152,
+      "time": "2026-10-11T10:00:00+06:00"
+    },
+    {
+      "id": "6242232",
+      "name": "Baridhara",
+      "district": "Dhaka",
+      "locationId": 6242232,
+      "provider": "AirGradient",
+      "pm25": 55.4,
+      "aqi": 150,
+      "time": "2026-10-11T10:00:00+06:00"
+    },
+    {
+      "id": "6234363",
+      "name": "Gulshan",
+      "district": "Dhaka",
+      "locationId": 6234363,
+      "provider": "AirGradient",
+      "pm25": 50.7,
+      "aqi": 138,
+      "time": "2026-10-11T10:00:00+06:00"
+    },
+    {
+      "id": "6234078",
+      "name": "Kaliganj",
+      "district": "Gazipur",
+      "locationId": 6234078,
+      "provider": "AirGradient",
+      "pm25": 49.3,
+      "aqi": 135,
+      "time": "2026-10-11T10:00:00+06:00"
+    }
+  ]
+}

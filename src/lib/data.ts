@@ -1,9 +1,11 @@
 import aqiJson from "@/data/aqi.json";
+import latestJson from "@/data/latest.json";
 import monthsJson from "@/data/months.json";
 import neighbourhoodsJson from "@/data/neighbourhoods.json";
 import temperatureJson from "@/data/temperature.json";
 import trafficJson from "@/data/traffic.json";
 import type {
+  LatestDataset,
   MonthsDataset,
   Neighbourhood,
   NeighbourhoodDataset,
@@ -27,6 +29,7 @@ export const HOURS = Array.from({ length: 24 }, (_, h) => h);
 
 export const monthsData = monthsJson as MonthsDataset;
 export const neighbourhoodData = neighbourhoodsJson as NeighbourhoodDataset;
+export const latestData = latestJson as LatestDataset;
 
 /** Month index (0 = Jan) → season. */
 export function seasonOfMonth(month: number): Season {

@@ -298,6 +298,35 @@ files["neighbourhoods.json"] = {
   })),
 };
 
+// Same shape as scripts/fetch-latest.mjs: one "latest reading" per place, taken
+// from each neighbourhood's winter curve at 10 am.
+const SNAPSHOT_HOUR = 10;
+files["latest.json"] = {
+  meta: {
+    ...common,
+    fetchedAt: "2026-01-15T04:00:00.000Z",
+    metric: "Latest hourly PM2.5 per sensor, as US AQI",
+    unit: "AQI",
+    source: "Demo data: illustrative snapshot, not sensor readings",
+    method: "Each neighbourhood's demo winter curve at 10 am, ±4% seeded noise",
+  },
+  places: files["neighbourhoods.json"].areas
+    .map((a) => {
+      const aqi = Math.round(a.seasons.winter.aqi[SNAPSHOT_HOUR] * (1 + jitter(0.04)));
+      return {
+        id: a.id,
+        name: a.name,
+        district: "Dhaka",
+        locationId: null,
+        provider: null,
+        pm25: null,
+        aqi,
+        time: "2026-01-15T10:00:00+06:00",
+      };
+    })
+    .sort((a, b) => b.aqi - a.aqi),
+};
+
 for (const [name, data] of Object.entries(files)) {
   writeFileSync(join(outDir, name), JSON.stringify(data, null, 2) + "\n");
   console.log(`wrote src/data/${name}`);
