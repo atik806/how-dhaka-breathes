@@ -12,6 +12,11 @@ import type { Season } from "@/lib/types";
 
 const winter = seasonStats("winter");
 const monsoon = seasonStats("monsoon");
+/** Gap between a season's dirtiest and cleanest typical hour. */
+const swing = (season: Season) => {
+  const st = seasonStats(season);
+  return st.worst.median - st.cleanest.median;
+};
 
 export function SeasonStory() {
   const [selected, setSelected] = useState<Season>("winter");
@@ -40,10 +45,11 @@ export function SeasonStory() {
         Same city, different air
       </h2>
       <p className="mt-4 max-w-2xl leading-relaxed text-ink/80">
-        The daily rhythm hardly changes through the year, but its height does. A winter day averages
-        an AQI of {winter.mean}. Once the monsoon rains arrive, that drops to {monsoon.mean}, about{" "}
-        {Math.round(winter.mean / monsoon.mean)} times cleaner. Rain washes particles out of the
-        air, and the brick kilns, which can only fire in the dry season, go cold.
+        A winter day averages an AQI of {winter.mean}. Once the monsoon rains arrive, that drops to{" "}
+        {monsoon.mean}, about {(winter.mean / monsoon.mean).toFixed(1)} times cleaner. The daily
+        rhythm changes too: in winter the cleanest and dirtiest hours are {swing("winter")} points
+        apart, in the monsoon only {swing("monsoon")}. Rain washes particles out of the air, the
+        wind keeps it moving, and the brick kilns, which only fire in the dry season, go cold.
       </p>
 
       <div className="mt-10">

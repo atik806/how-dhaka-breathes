@@ -24,7 +24,7 @@ export function DayStory() {
       <div className="mx-auto max-w-6xl px-5 pt-24 sm:px-8">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-heat">Part one</p>
         <h2 id="day-title" className="mt-3 max-w-2xl font-display text-4xl text-ink sm:text-5xl">
-          Twenty-four hours on a winter weekday
+          Twenty-four hours on a winter day
         </h2>
         <p className="mt-4 max-w-xl text-mute">
           Scroll through the day. Hover over the chart, or focus it and use the arrow keys, to read
@@ -69,7 +69,7 @@ export function DayStory() {
 
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
         <DataTable
-          caption="Typical winter weekday in Dhaka, hourly medians"
+          caption="Typical winter day in Dhaka, hourly medians (traffic: weekday)"
           columns={[
             { label: "AQI", series: aqiData.seasons[STORY_SEASON] },
             { label: "Traffic (0–100)", series: trafficData.days.weekday },

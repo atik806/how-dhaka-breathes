@@ -5,7 +5,7 @@ import { curveMonotoneX, line } from "d3-shape";
 import { motion, useReducedMotion } from "motion/react";
 import { useState } from "react";
 import { aqiCategory } from "@/lib/aqi";
-import { aqiData, neighbourhoodData, neighbourhoodSeries, SEASONS } from "@/lib/data";
+import { NEIGHBOURHOOD_SEASONS, neighbourhoodData, neighbourhoodSeries, SEASONS } from "@/lib/data";
 import { hourLabel } from "@/lib/format";
 import { mean } from "@/lib/plan";
 import type { Season } from "@/lib/types";
@@ -18,21 +18,41 @@ const SPARK_H = 28;
 const sx = scaleLinear()
   .domain([0, 23])
   .range([1, SPARK_W - 1]);
+const SEASON_LABEL = Object.fromEntries(SEASONS.map((s) => [s.id, s.label])) as Record<
+  Season,
+  string
+>;
 // Text on the bright EPA swatches (green → orange) reads best in black.
 const DARK_TEXT = new Set(["Good", "Moderate", "Unhealthy for Sensitive Groups"]);
 
 export function NeighbourhoodChart() {
   const reduce = useReducedMotion();
-  const [season, setSeason] = useState<Season>("winter");
-  const cityMean = mean(aqiData.seasons[season].map((p) => p.median));
+  const [season, setSeason] = useState<Season>(NEIGHBOURHOOD_SEASONS[0]?.id ?? "winter");
+  const demo = neighbourhoodData.meta.demo;
 
+  // Only areas with enough data for this season are shown.
   const rows = neighbourhoodData.areas
-    .map((a) => {
+    .flatMap((a) => {
       const series = neighbourhoodSeries(a, season);
+      if (!series) return [];
       const peak = series.indexOf(Math.max(...series));
-      return { ...a, series, avg: Math.round(mean(series)), peak };
+      return [
+        {
+          ...a,
+          series,
+          days: a.seasons[season]!.days,
+          avg: Math.round(mean(series)),
+          peak,
+        },
+      ];
     })
     .sort((a, b) => a.avg - b.avg);
+  const missing = neighbourhoodData.areas.filter((a) => !a.seasons[season]).map((a) => a.name);
+  const refMean = mean(rows.map((r) => r.avg));
+
+  if (rows.length === 0) {
+    return <p className="text-sm text-mute">Not enough neighbourhood data yet.</p>;
+  }
 
   // Sparklines share one y-scale per season so their shapes stay comparable.
   const all = rows.flatMap((r) => r.series);
@@ -52,11 +72,14 @@ export function NeighbourhoodChart() {
         label="Season"
         value={season}
         onChange={setSeason}
-        options={SEASONS.map((s) => ({ value: s.id, label: s.label }))}
+        options={NEIGHBOURHOOD_SEASONS.map((s) => ({
+          value: s.id,
+          label: s.label,
+        }))}
       />
 
       <div className="relative mt-8">
-        {/* City average reference line, positioned over the bar column. */}
+        {/* Average-of-areas reference line, positioned over the bar column. */}
         <div
           className="pointer-events-none absolute inset-y-0 left-[8.5rem] right-0 sm:left-[12.5rem] sm:right-[9.5rem]"
           aria-hidden
@@ -64,11 +87,11 @@ export function NeighbourhoodChart() {
           <motion.div
             className="absolute inset-y-0 border-l border-dashed border-ink/40"
             initial={false}
-            animate={{ left: `${(cityMean / MAX) * 100}%` }}
+            animate={{ left: `${(refMean / MAX) * 100}%` }}
             transition={t}
           >
             <span className="absolute -top-5 -translate-x-1/2 whitespace-nowrap text-[10px] text-mute">
-              city avg {Math.round(cityMean)}
+              avg {Math.round(refMean)}
             </span>
           </motion.div>
         </div>
@@ -90,9 +113,10 @@ export function NeighbourhoodChart() {
                   <div className="text-sm font-medium text-ink">{r.name}</div>
                   <div
                     className="truncate text-[11px] text-mute sm:whitespace-normal"
-                    title={r.note}
+                    title={r.site}
                   >
-                    {r.note}
+                    {r.site}
+                    {!demo && ` · ${r.days} days`}
                   </div>
                 </div>
                 <div className="relative h-7 rounded bg-line/40">
@@ -100,7 +124,9 @@ export function NeighbourhoodChart() {
                     className="absolute inset-y-0 left-0 flex items-center justify-end rounded pr-2"
                     style={{ backgroundColor: c.color }}
                     initial={false}
-                    animate={{ width: `${(Math.min(r.avg, MAX) / MAX) * 100}%` }}
+                    animate={{
+                      width: `${(Math.min(r.avg, MAX) / MAX) * 100}%`,
+                    }}
                     transition={t}
                   >
                     <span
@@ -129,16 +155,25 @@ export function NeighbourhoodChart() {
             );
           })}
         </ol>
-        <p className="mt-3 hidden text-right text-[11px] text-mute sm:block">
-          24h curve · dot = worst hour
-        </p>
+        <div className="mt-3 flex flex-wrap justify-between gap-2 text-[11px] text-mute">
+          <span>
+            {missing.length > 0 &&
+              `Not enough ${SEASON_LABEL[season].toLowerCase()} data: ${missing.join(", ")}.`}
+          </span>
+          <span className="hidden sm:inline">24h curve · dot = worst hour</span>
+        </div>
       </div>
 
       <DataTable
-        caption={`Typical hourly AQI by neighbourhood, ${SEASONS.find((s) => s.id === season)!.label}`}
+        caption={`Typical hourly AQI by neighbourhood, ${SEASON_LABEL[season]}`}
         columns={rows.map((r) => ({
           label: r.name,
-          series: r.series.map((v, hour) => ({ hour, median: v, p25: v, p75: v })),
+          series: r.series.map((v, hour) => ({
+            hour,
+            median: v,
+            p25: v,
+            p75: v,
+          })),
         }))}
       />
     </div>

@@ -2,12 +2,16 @@
 
 import { scaleLinear } from "d3-scale";
 import { motion, useReducedMotion } from "motion/react";
-import { aqiData, SEASONS } from "@/lib/data";
+import { aqiCeiling, aqiData, SEASONS } from "@/lib/data";
 import { useSize } from "@/lib/hooks";
 import type { Season } from "@/lib/types";
 import { AqiBands, AqiGradient } from "./AqiGradient";
 import { HourAxis } from "./HourAxis";
 import { bandPath, linePath } from "./scales";
+
+// One y-scale for every season, sized to the dirtiest band.
+const Y_MAX = aqiCeiling(SEASONS.flatMap((s) => aqiData.seasons[s.id].map((p) => p.p75)));
+const TICKS = Array.from({ length: Y_MAX / 50 + 1 }, (_, i) => i * 50);
 
 const M = { top: 12, right: 92, bottom: 26, left: 38 };
 
@@ -20,7 +24,7 @@ export function SeasonChart({ selected }: { selected: Season }) {
     .domain([0, 23])
     .range([M.left, Math.max(M.left + 1, width - M.right)]);
   const y = scaleLinear()
-    .domain([0, 300])
+    .domain([0, Y_MAX])
     .range([height - M.bottom, M.top]);
   const series = aqiData.seasons[selected];
 
@@ -32,7 +36,7 @@ export function SeasonChart({ selected }: { selected: Season }) {
             <AqiGradient id="season-aqi" y={y} />
           </defs>
           <AqiBands y={y} x0={M.left} x1={width - M.right} opacity={0.08} />
-          {[0, 50, 100, 150, 200, 250, 300].map((v) => (
+          {TICKS.map((v) => (
             <text
               key={v}
               x={M.left - 8}

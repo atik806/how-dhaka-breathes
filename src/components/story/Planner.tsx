@@ -4,11 +4,13 @@ import { motion, useReducedMotion } from "motion/react";
 import { useId, useState } from "react";
 import { SegmentedControl } from "@/components/charts/SegmentedControl";
 import { aqiCategory, aqiToPm25, AQI_ADVICE } from "@/lib/aqi";
-import { HOURS, monthsData, trafficData } from "@/lib/data";
+import { aqiCeiling, HOURS, monthsData, trafficData } from "@/lib/data";
 import { hourLabel } from "@/lib/format";
 import { useDhakaNow } from "@/lib/hooks";
 import { findWindows, mean, type Window } from "@/lib/plan";
 import type { DayType } from "@/lib/types";
+
+const STRIP_MAX = aqiCeiling(monthsData.months.flatMap((m) => m.aqi));
 
 const RANGES = {
   waking: { label: "5 am – 11 pm", from: 5, to: 23 },
@@ -145,7 +147,7 @@ export function Planner() {
                   className="rounded-t-[2px]"
                   style={{ backgroundColor: aqiCategory(v).color, opacity: inRange ? 0.9 : 0.25 }}
                   initial={false}
-                  animate={{ height: `${Math.min(100, (v / 300) * 100)}%` }}
+                  animate={{ height: `${Math.min(100, (v / STRIP_MAX) * 100)}%` }}
                   transition={reduce ? { duration: 0 } : { duration: 0.45 }}
                 />
               );
@@ -162,9 +164,10 @@ export function Planner() {
           </div>
         </div>
         <p className="mt-3 text-[11px] text-mute">
-          Typical {row.label} {day === "friday" ? "Friday" : "weekday"} (demo data). In this demo,
-          traffic depends on the day type but AQI does not, so the cleanest window only changes with
-          the month.
+          Typical {row.label} {day === "friday" ? "Friday" : "weekday"}
+          {monthsData.meta.demo ? " (demo data)" : ""}. Traffic is an estimated index that changes
+          with the day type. Air quality is a typical day for the month across all days of the week,
+          so the cleanest window only changes with the month.
         </p>
       </div>
     </div>
@@ -229,9 +232,7 @@ function WindowCard({
         <dt className="text-mute">PM2.5</dt>
         <dd className="text-right tabular-nums text-ink">{Math.round(pm25)} µg/m³</dd>
         <dt className="text-mute">Temperature</dt>
-        <dd className="text-right tabular-nums text-ink">
-          {tempRange}°C
-        </dd>
+        <dd className="text-right tabular-nums text-ink">{tempRange}°C</dd>
         <dt className="text-mute">Traffic</dt>
         <dd className="text-right tabular-nums text-ink">{trafficMean}/100</dd>
       </dl>

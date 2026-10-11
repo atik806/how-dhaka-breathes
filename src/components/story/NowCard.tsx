@@ -1,7 +1,7 @@
 "use client";
 
 import { aqiCategory, aqiToPm25, AQI_ADVICE } from "@/lib/aqi";
-import { monthsData } from "@/lib/data";
+import { monthsData, periodLabel } from "@/lib/data";
 import { hourLabel } from "@/lib/format";
 import { useDhakaNow } from "@/lib/hooks";
 
@@ -71,8 +71,10 @@ export function NowCard() {
       </div>
       <p className="mt-3 text-xs leading-relaxed text-ink/75">{AQI_ADVICE[c.name]}</p>
       <p className="mt-2 text-[11px] text-mute">
-        Typical {hourLabel(now.hour, "long")} in {MONTH_NAMES[now.month]} (demo data, not a live
-        reading).
+        Typical {hourLabel(now.hour, "long")} in {MONTH_NAMES[now.month]}
+        {monthsData.meta.demo
+          ? " (demo data, not a live reading)."
+          : `, from ${periodLabel(monthsData.meta.period)}. Not a live reading.`}
       </p>
     </aside>
   );

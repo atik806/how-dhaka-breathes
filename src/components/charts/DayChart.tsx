@@ -4,7 +4,7 @@ import { scaleLinear } from "d3-scale";
 import { motion, useReducedMotion } from "motion/react";
 import { useState, type KeyboardEvent, type PointerEvent } from "react";
 import { aqiCategory } from "@/lib/aqi";
-import { aqiData, temperatureData, trafficData } from "@/lib/data";
+import { aqiCeiling, aqiData, temperatureData, trafficData } from "@/lib/data";
 import { hourLabel } from "@/lib/format";
 import { useSize } from "@/lib/hooks";
 import { STORY_SEASON, type StoryStep } from "@/lib/story";
@@ -85,7 +85,9 @@ export function DayChart({ step, stepIndex }: { step: StoryStep; stepIndex: numb
     const before = PANELS.slice(0, i).reduce((sum, q) => sum + q.weight, 0);
     const top = M.top + plotH * before + GAP * i;
     const domain =
-      p.layer === "aqi" ? ([0, 300] as [number, number]) : niceDomain([p.series], p.domainStep);
+      p.layer === "aqi"
+        ? ([0, aqiCeiling(p.series.map((q) => q.p75))] as [number, number])
+        : niceDomain([p.series], p.domainStep);
     const y = scaleLinear()
       .domain(domain)
       .range([top + h, top + HEADER]);
@@ -130,7 +132,7 @@ export function DayChart({ step, stepIndex }: { step: StoryStep; stepIndex: numb
   return (
     <figure className="flex h-full w-full flex-col">
       <figcaption className="sr-only">
-        A typical winter weekday in Dhaka, hour by hour: air quality index, an estimated traffic
+        A typical winter day in Dhaka, hour by hour: air quality index, an estimated weekday traffic
         congestion index, and temperature, drawn on a shared 24-hour axis.
       </figcaption>
 

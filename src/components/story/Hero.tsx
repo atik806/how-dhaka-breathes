@@ -2,7 +2,7 @@
 
 import { scaleLinear } from "d3-scale";
 import { motion, useReducedMotion } from "motion/react";
-import { aqiData } from "@/lib/data";
+import { ALL_DEMO, aqiData } from "@/lib/data";
 import { STORY_SEASON } from "@/lib/story";
 import { AqiGradient } from "@/components/charts/AqiGradient";
 import { bandPath, linePath } from "@/components/charts/scales";
@@ -16,7 +16,10 @@ export function Hero() {
   const series = aqiData.seasons[STORY_SEASON];
   const x = scaleLinear().domain([0, 23]).range([0, W]);
   const y = scaleLinear()
-    .domain([100, 300])
+    .domain([
+      Math.floor(Math.min(...series.map((p) => p.p25)) / 50) * 50,
+      Math.ceil(Math.max(...series.map((p) => p.p75)) / 50) * 50,
+    ])
     .range([H - 10, 10]);
 
   return (
@@ -25,7 +28,7 @@ export function Hero() {
         <div>
           <p className="inline-flex items-center gap-2 rounded-full border border-line bg-panel/70 px-3 py-1 text-xs text-mute">
             <span className="size-1.5 rounded-full bg-heat" aria-hidden />A data story · Dhaka,
-            Bangladesh · demo data
+            Bangladesh · {ALL_DEMO ? "demo data" : "real data"}
           </p>
           <h1 className="mt-6 max-w-4xl font-display text-5xl leading-[1.02] text-ink sm:text-7xl lg:text-8xl">
             How Dhaka <em className="text-heat">breathes</em>
